@@ -4,6 +4,8 @@ import matplotlib.pyplot as plt
 
 import urllib
 
+#import sys, codecs
+#sys.stdout = codecs.getwriter("CP932")(sys.stdout)
 
 def main():
 
@@ -25,20 +27,28 @@ def main():
 
         ###男性の最新#######
         
-        ##最新：　　ThinkPad: 2022-06-22 18.52 init
-        ##１個前：　Surface: 2022-06-11 19.00 init
-        ##２個前：　Surface: 2022-06-09 06.35 init
+        #最新： Think pad: 2022-08-13 22.07 init
+
+        #以下過去情報
+        # 5_740_8_reallocated_hist.pngの結果はThinkPad: 2022-06-27 20.30 init
+        ##1個前：　　ThinkPad: 2022-06-22 18.52 init (git hug アカウント https://github.com/Bachelor-marketing)
+        # 5_740_8_reallocated_hist.pngの結果はThinkPad: 2022-06-27 20.30 init
+        ##2個前：　Surface: 2022-06-11 19.00 init (git hug アカウント gucchi123上)
+        ##3個前：　Surface: 2022-06-09 06.35 init
 
         
 
         ###女性の最新#######
         
-        ##最新：　　ThinkPad: 2022-06-26 08.54 init
-        ##１個前：　Surface: 2022-06-11 10.16 init
-        ##２個前：　ThinkPad: 2022-06-06 08.46 init
+        ##最新：　ThinkPad:2022-08-20 23.24 init
+
+        #以下過去情報
+        ##1個前：　　ThinkPad: 2022-06-26 08.54 init
+        ##2個前：　Surface: 2022-06-11 10.16 init
+        ##3個前：　ThinkPad: 2022-06-06 08.46 init
 
 
-        referrence = "Bachelor-marketing" # gucchi123 or Bachelor-marketing
+        referrence = "Bachelor-marketing" # gucchi123 or Bachelor-marketing or local: test用
 
         if referrence == "gucchi123":
             t_male_modelfit_date = "2022年6月11日"
@@ -81,29 +91,25 @@ def main():
             female_optimized_file = "{}_reallocated.csv".format(fe_ping)
                 
 
-            male_link = '[東京男性 元データとその他の分析結果の確認](https://github.com/{}/male_mmm_data)'.format(referrence)
-            female_link = '[東京女性 元データとその他の分析結果の確認](https://github.com/{}/female_mmm_data)'.format(referrence)
+            male_link = '[東京男性 元データとその他の分析結果の確認](https://github.com/{}/male_mmm_data1)'.format(referrence)
+            female_link = '[東京女性 元データとその他の分析結果の確認](https://github.com/{}/female_mmm_data1)'.format(referrence)
         
-        else:
-            t_male_modelfit_date = "2022年6月26日"
-            t_female_modelfit_date = "2022年6月26日"
+        elif referrence == "Bachelor-marketing":
+            t_male_modelfit_date = "2022年8月28日"
+            t_female_modelfit_date = "2022年8月28日"
 
             ######広告チャネルの金額確認######
-            t_male_sim_date = "2022年6月26日"
-            t_female_sim_date = "2022年6月26日"
+            t_male_sim_date = "2022年8月28日"
+            t_female_sim_date = "2022年8月28日"
 
             ######モデルの正確性確認セクション######
-            ma_ping = "5_740_8"
-            fe_ping = "5_1246_6"
-            
+            ma_ping = "2_699_2"
+            fe_ping = "5_1034_6"            
             
             #男性 　　　
-            #6/5 = "5_1733_1.png"
-            #latest #6/6 Surfaceの2022-06-06 00.40 init
             male_modelfit_ping = "{}.png".format(ma_ping)
             
             #女性
-            #latest #6/5 ThinkPadの2022-06-06 08.46 init（ただし、以下のPNGとは別のものであるため最終的に整合させる）
             female_modelfit_ping = "{}.png".format(fe_ping)
             
             ######広告チャネルの金額確認########
@@ -114,7 +120,61 @@ def main():
             ######データインプット######
             #男性
             
-            file_type = "git"  # git or local
+            file_type = "git"  # git or local localはクライアント環境に乗せて更に実験したい場合に指定
+
+            local_path_male = r"C:\Users\makoto.mizuguchi\Documents\batchelor\2022-08-13 22.07 init"
+            local_path_female = r"C:\Users\makoto.mizuguchi\Documents\batchelor\2022-08-20 23.24 init"
+
+            
+            #男性
+            #male_training_data = "batch491-1310-男性.csv" 日本語表記でGitにするとAsciiコードエラーになる
+            male_training_data = "batch491-1310-male.csv" 
+            male_optimized_file = "{}_reallocated.csv".format(ma_ping)
+            
+            #女性
+            female_training_data = "batch491-1310-女性.csv" 
+            female_training_data = "batch491-1310-female.csv"
+            female_optimized_file = "{}_reallocated.csv".format(fe_ping)
+                
+
+            male_link = '[東京男性 元データとその他の分析結果の確認](https://github.com/{}/male_mmm_data1)'.format(referrence)
+            female_link = '[東京女性 元データとその他の分析結果の確認](https://github.com/{}/female_mmm_data1)'.format(referrence)
+
+
+        #テスト段階で実施する
+        elif referrence == "local": 
+            local_path_male = r"C:\Users\makoto.mizuguchi\Documents\batchelor\2022-08-13 22.07 init"
+            local_path_female = r"C:\Users\makoto.mizuguchi\Documents\batchelor\2022-08-20 23.24 init"
+
+            t_male_modelfit_date = "2022年8月27日"
+            t_female_modelfit_date = "2022年8月27日"
+
+            ######広告チャネルの金額確認######
+            t_male_sim_date = "2022年8月27日"
+            t_female_sim_date = "2022年8月27日"
+
+            ######モデルの正確性確認セクション######
+            ma_ping = "2_699_2"
+            fe_ping = "5_1034_6"
+            
+            
+            #男性 　　　
+            #8/27 ThinkPad 2022-08-13 22.07 init
+            male_modelfit_ping = "{}\{}.png".format(local_path_male, ma_ping)
+            
+            #女性
+            #8/27 ThinkPad 2022-06-06 2022-08-20 23.24 init
+            female_modelfit_ping = "{}\{}.png".format(local_path_female, fe_ping)
+            
+            ######広告チャネルの金額確認########
+            male_simu_file   = "{}\{}_reallocated_hist.png".format(local_path_male, ma_ping)
+            female_simu_file = "{}\{}_reallocated_hist.png".format(local_path_female, fe_ping)
+        
+            
+            ######データインプット######
+            #男性
+            
+            file_type = "local"  # git or local
             
             #男性
             male_training_data = "batch491-1186-%E7%94%B7%E6%80%A7.csv" 
@@ -125,10 +185,8 @@ def main():
             female_optimized_file = "{}_reallocated.csv".format(fe_ping)
                 
 
-            male_link = '[東京男性 元データとその他の分析結果の確認](https://github.com/{}/male_mmm_data)'.format(referrence)
-            female_link = '[東京女性 元データとその他の分析結果の確認](https://github.com/{}/female_mmm_data)'.format(referrence)
-
-
+            male_link = '[東京男性 元データとその他の分析結果の確認](https://github.com/{}/male_mmm_data1)'.format(referrence)
+            female_link = '[東京女性 元データとその他の分析結果の確認](https://github.com/{}/female_mmm_data1)'.format(referrence)
 
 
         
@@ -149,10 +207,11 @@ def main():
                 
                 if selected_gender == "東京男性":
                     st.markdown(male_link, unsafe_allow_html=True) 
-                    st.image("https://raw.githubusercontent.com/{}/male_mmm_data/main/{}".format(referrence,pngfile))
+                    #st.write("https://raw.githubusercontent.com/{}/male_mmm_data1/main/{}".format(referrence,pngfile))
+                    st.image("https://raw.githubusercontent.com/{}/male_mmm_data1/main/{}".format(referrence,pngfile))
                 elif selected_gender == "東京女性":
                     st.markdown(female_link, unsafe_allow_html=True) 
-                    st.image("https://raw.githubusercontent.com/{}/female_mmm_data/main/{}".format(referrence, pngfile))    
+                    st.image("https://raw.githubusercontent.com/{}/female_mmm_data1/main/{}".format(referrence, pngfile))    
 
             if selected_gender == "東京男性":
                 pngfile=male_modelfit_ping
@@ -176,17 +235,21 @@ def main():
 
                 if selected_gender=="東京男性":
                     if file_type == "git":
-                        training_data_path = "https://raw.githubusercontent.com/{}/male_mmm_data/main/{}".format(referrence,training_data)
-                        optimized_file = "https://raw.githubusercontent.com/{}/male_mmm_data/main/{}".format(referrence,optimzed_data)
+                        training_data_path = "https://raw.githubusercontent.com/{}/male_mmm_data1/main/{}".format(referrence,training_data)
+                        optimized_file = "https://raw.githubusercontent.com/{}/male_mmm_data1/main/{}".format(referrence,optimzed_data)
                     elif file_type == "local":
-                        training_data_path = "batch491-1186-男性.csv"
-                        optimized_file = "4_1401_4_reallocated.csv"
+                        training_data_path = r"C:\Users\makoto.mizuguchi\Desktop\Udemy_エクセルMMM\バチェラーデート\batch491-1310-男性.csv"
+                        optimized_file = "{}\{}_reallocated.csv".format(local_path_male,ma_ping)
                 else:
-                    training_data_path = "https://raw.githubusercontent.com/{}/female_mmm_data/main/{}".format(referrence, training_data)
-                    optimized_file = "https://raw.githubusercontent.com/{}/female_mmm_data/main/{}".format(referrence, optimzed_data)
-                
+                    if file_type == "git":
+                        training_data_path = "https://raw.githubusercontent.com/{}/female_mmm_data1/main/{}".format(referrence, training_data)
+                        optimized_file = "https://raw.githubusercontent.com/{}/female_mmm_data1/main/{}".format(referrence, optimzed_data)
+                    elif file_type == "local":
+                        training_data_path = r"C:\Users\makoto.mizuguchi\Desktop\Udemy_エクセルMMM\バチェラーデート\batch491-1310-女性.csv"
+                        optimized_file = "{}\{}_reallocated.csv".format(local_path_female ,fe_ping)
+
                 #st.write(training_data_path)
-                df_training = pd.read_csv(training_data_path, encoding="cp932")
+                df_training = pd.read_csv(training_data_path, encoding="CP932")
 
                 def investment(channel, file, data):
                     result_data = pd.read_csv(file, encoding="CP932")
@@ -253,10 +316,18 @@ def main():
                     st.write('-----------------------------------------------------------------------')
                     
                 if selected_channel == "シミュレート結果一覧":
-                    if selected_gender=="東京男性":
-                        st.image("https://raw.githubusercontent.com/{}/male_mmm_data/main/{}".format(referrence,male_simu_file))
+                    if referrence == "local":
+                        if selected_gender=="東京男性":
+                            st.write("{}".format(male_simu_file))
+                            st.image("C:/Users/makoto.mizuguchi/Documents/batchelor/2022-08-13%2022.07%20init/2_699_2_reallocated_hist.png")
+                        else:
+                            st.image("{}".format(female_simu_file))
                     else:
-                        st.image("https://raw.githubusercontent.com/{}/female_mmm_data/main/{}".format(referrence, female_simu_file))
+                        if selected_gender=="東京男性":
+                            st.write("https://raw.githubusercontent.com/{}/male_mmm_data1/main/{}".format(referrence,male_simu_file))
+                            st.image("https://raw.githubusercontent.com/{}/male_mmm_data1/main/{}".format(referrence,male_simu_file))
+                        else:
+                            st.image("https://raw.githubusercontent.com/{}/female_mmm_data1/main/{}".format(referrence, female_simu_file))
 
                 if selected_channel == "Facebook広告":
                     selected_channels = [ i for i in df_training.columns if "FB" in i if "_S" in i]
@@ -324,7 +395,7 @@ def main():
                 #st.write('-----------------------------------------------------------------------')
                 st.subheader("投資金額(*)を変動させた場合のCV数の増加割合")
                 st.write("（*）150,000円 - 1,530,000円")
-                url = "https://raw.githubusercontent.com/{}/{}_mmm_data/main/invest_simu/Total_Response_Increase.png".format(referrence,gender)
+                url = "https://raw.githubusercontent.com/{}/{}_mmm_data1/main/invest_simu/Total_Response_Increase.png".format(referrence,gender)
                 st.image(url)
                 st.write("")
                 st.write('-----------------------------------------------------------------------')
@@ -333,11 +404,11 @@ def main():
                 for trial in range(150000, 1550000, 20000):
                     st.write("１日の広告投資金額の総額{:,}円".format(trial))
                     try:
-                        download_url = "https://raw.githubusercontent.com/{}/{}_mmm_data/main/invest_simu/{}_reallocated_respo{}.png".format(referrence, gender, ping, trial)
+                        download_url = "https://raw.githubusercontent.com/{}/{}_mmm_data1/main/invest_simu/{}_reallocated_respo{}.png".format(referrence, gender, ping, trial)
                         data = urllib.request.urlopen(download_url).read()
-                        st.image("https://raw.githubusercontent.com/{}/{}_mmm_data/main/invest_simu/{}_reallocated_respo{}.png".format(referrence,gender, ping, trial))
+                        st.image("https://raw.githubusercontent.com/{}/{}_mmm_data1/main/invest_simu/{}_reallocated_respo{}.png".format(referrence,gender, ping, trial))
                     except:   
-                        st.image("https://raw.githubusercontent.com/{}/{}_mmm_data/main/invest_simu/%20{}_reallocated_respo{}.png".format(referrence,gender, ping, trial))
+                        st.image("https://raw.githubusercontent.com/{}/{}_mmm_data1/main/invest_simu/%20{}_reallocated_respo{}.png".format(referrence,gender, ping, trial))
                         
                     st.write('-----------------------------------------------------------------------')
 
