@@ -4,6 +4,9 @@ import matplotlib.pyplot as plt
 
 import urllib
 
+import os
+import numpy as np
+
 #import sys, codecs
 #sys.stdout = codecs.getwriter("CP932")(sys.stdout)
 
@@ -190,7 +193,7 @@ def main():
 
 
         
-        dolists = ["モデルの正確性確認", "広告チャネルの金額確認", "投資金額毎のシミュレーション"]
+        dolists = ["モデルの正確性確認", "広告チャネルの金額確認", "投資金額毎のシミュレーション(サマリー)","投資金額毎のシミュレーション(詳細)"]
         DoList = st.sidebar.selectbox(
             '確認したい事項を選択：',dolists
         )
@@ -382,7 +385,155 @@ def main():
             elif selected_gender == "東京女性":
                 visualization(selected_gender, female_training_data,female_optimized_file)
 
-        elif DoList == "投資金額毎のシミュレーション":
+
+        elif DoList == "投資金額毎のシミュレーション(サマリー)":
+
+            st.header("投資金額毎のシミュレーション(サマリー)")
+            seasonality = ["trend", "season", "weekday","holiday","intercept" ,"consecutive_holidays_1"
+                            ,"consecutive_holidays_2" ,"consecutive_holidays_3" ,"consecutive_holidays_4"
+                            ,"consecutive_holidays_5" ,"consecutive_holidays_6" ,"consecutive_holidays_7"
+                            ,"consecutive_holidays_8" ,"consecutive_holidays_9" ,"consecutive_holidays_10"
+                            ,"consecutive_holidays_11" ,"consecutive_holidays_12"]
+
+            event = ["boolean_value_3","boolean_value_5", "boolean_value_6", "boolean_value_7", 
+                    "boolean_value_8", "boolean_value_9", "boolean_value_10", "boolean_value_11",
+                    "boolean_value_12", "boolean_value_13", "boolean_value_14", "boolean_value_15",
+                    "boolean_value_16", "boolean_value_17", "boolean_value_18", "boolean_value_19",
+                    "boolean_value_20", "boolean_value_21", "boolean_value_22", "boolean_value_23",
+                    "Influencer_Post", "Event"]
+
+            macro = ["covid.19.Infected.person_1", "weather_Average.temperature..._1", "weather_Total.precipitation.mm._1",
+                    "weather_Daylight.hours..hours._1", "Complementary.goods_1", "Complementary.goods_2", "Complementary.goods_3",
+                    "macroeconomic_indicators_1", "macroeconomic_indicators_4", "macroeconomic_indicators_13","macroeconomic_indicators_14"]
+            
+            service_price = ["price_16"]
+
+            organic = ["PR_I", "Google_trends_1", "Referral_P_1", "Twitter_scrolling_increment_1"]
+            
+            #辞書の作成
+            items = {"seasonality": seasonality, "event": event, "macro": macro, "service_price": service_price, "organic":organic}
+
+            def simulate_KPI(sex, items, decomp_data, start_ds, end_ds, spend_average, solID):
+                
+                KPIs = []
+
+                spend = decomp_data.columns[decomp_data.columns.str.contains("_S")]
+                print(spend)
+                targets = spend
+                fil = []
+                for val in targets:
+                    if val in decomp_data.columns:
+                        fil.append(val)
+                condition = fil
+                solID = solID
+                spend_decomp = decomp_data.loc[(decomp_data['ds'] >= start_ds) & (decomp_data['ds'] <= end_ds) & (decomp_data['solID'] == solID), condition].mean().sum() 
+                KPIs.append(spend_decomp)
+                #print(decomp_data.loc[(decomp_data['ds'] > start_ds) & (decomp_data['ds'] < end_ds) & (decomp_data['solID'] == solID), condition].mean())
+
+                for item in items:
+                    targets = items[item]
+                    fil = []
+                    for val in targets:
+                        if val in decomp_data.columns:
+                            fil.append(val)
+                    condition = fil
+                    item_decomp = decomp_data.loc[(decomp_data['ds'] >= start_ds) & (decomp_data['ds'] <= end_ds) & (decomp_data['solID'] == solID), condition].mean().sum()
+                    KPIs.append(item_decomp)        
+
+                simulate_df = pd.DataFrame(KPIs).T
+                simulate_df.columns = ["Paid (Controllable)", "Seasonality", "Event (Controllable)", "macro", "price (Controllable)", "organic"]
+                simulate_df = simulate_df.T
+                simulate_df.sort_values(by=0, inplace=True)
+                st.subheader(f"{sex}の集計結果")
+                st.write(f"★{start_ds}～{end_ds}までの１日の支出平均は{spend_average:,.1f}円で、x軸のPaid(Controllable)に該当")
+                st.write(f"★{start_ds}～{end_ds}までの１日のモデル予測CVは{simulate_df[0].sum(): .2f}件")
+                fig = plt.figure(figsize=(12,6))
+                plt.bar(simulate_df.index, simulate_df[0])
+                plt.xticks(rotation=45)
+                plt.xlabel("Items for Data")
+                plt.ylabel("# of Acquisition")
+                plt.title(f"{sex} Modeled Acquisition Total:{simulate_df[0].sum(): .2f}")
+
+                st.pyplot(fig)
+
+            #モデル出力のDecompファイル読み込み
+            def fileread(place, sex,  spend_file, folder, path, solID, start_ds, end_ds,decomp_file ):
+                if place == "local":
+                    spend_file = spend_file
+                    folder = folder
+                    path = path
+                    spend_url = os.path.join(path,folder,spend_file)
+                elif place == "git":
+                    if sex == "male":
+                        spend_url = "https://raw.githubusercontent.com/Bachelor-marketing/male_mmm_data1/main/{}".format(spend_file)
+                        st.write(spend_url)
+                    elif sex == "female":
+                        spend_url = "https://raw.githubusercontent.com/Bachelor-marketing/female_mmm_data1/main/{}".format(spend_file)
+                        st.write(spend_url)
+
+                ds_data = pd.read_csv(spend_url, parse_dates=["ds"])
+                ds_data.head()
+
+                start_ds = start_ds
+                end_ds = end_ds
+                data_type = "rawMedia"
+                solID = solID
+
+                spend_average = np.average(ds_data.loc[(ds_data['ds'] >= start_ds) & (ds_data['ds'] <= end_ds) &(ds_data['type'] == data_type) & (ds_data['solID'] == solID),ds_data.columns[ds_data.columns.str.contains("_S")] ].values.sum(axis=1))
+                
+
+                decomp_file = decomp_file
+
+                if place =="local":
+                    decomp_url = os.path.join(path,folder,decomp_file)
+                elif place == "git":
+                    if sex == "male":
+                        decomp_url = "https://raw.githubusercontent.com/Bachelor-marketing/male_mmm_data1/main/{}".format(decomp_file)
+                    else:
+                        decomp_url = "https://raw.githubusercontent.com/Bachelor-marketing/female_mmm_data1/main/{}".format(decomp_file)
+                        print(decomp_url)
+
+                print(decomp_url)
+
+                decomp_data = pd.read_csv(decomp_url, parse_dates=["ds"])
+                
+                return spend_average, decomp_data
+
+            #ファイル指定
+            spend_file = "pareto_media_transform_matrix.csv"
+            decomp_file = "pareto_alldecomp_matrix.csv"
+            path = r"C:\Users\makoto.mizuguchi\Documents\batchelor"
+            
+            # Calender
+            start_ds = "2022-05-08"
+            end_ds = "2022-05-10"
+            #8日から１０日の３日間
+
+            
+            folder_m = "2022-08-13 22.07 init"
+            folder_fm = "2022-08-20 23.24 init"
+            solID_m = "2_699_2"
+            solID_fm = "4_1114_7"
+            
+            
+            #spend_average, decomp_data = fileread(spend_file, folder_m, path, solID_m, start_ds, end_ds ,decomp_file)
+            #x = pd.to_datetime(decomp_data["ds"].values)
+            #select_dates = st.date_input('表示したい日付の選択',value=(x[0],x[-1]),min_value=x[0],max_value=x[-1])
+            #start_ds = np.datetime64(select_dates[0])
+            #end_ds = np.datetime64(select_dates[1])
+            
+            spend_average, decomp_data = fileread("git", "male", spend_file, folder_m, path, solID_m, start_ds, end_ds,decomp_file ) 
+            simulate_KPI("Male", items, decomp_data, start_ds, end_ds, spend_average, solID_m)
+
+            st.write("-----------") 
+
+            spend_average, decomp_data = fileread("git", "female" ,spend_file, folder_fm, path, solID_fm, start_ds, end_ds , decomp_file)
+            simulate_KPI("Female", items, decomp_data, start_ds, end_ds, spend_average, solID_fm)
+
+
+
+
+        elif DoList == "投資金額毎のシミュレーション(詳細)":
             selected_gender = st.sidebar.selectbox(
                 '性別を選択：',gender
             )
